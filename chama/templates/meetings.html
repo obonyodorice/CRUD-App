@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block content %}
+<h4>Meetings</h4>
+{% if me.is_admin %}<a class="btn btn-success mb-3" href="{% url 'add' chama.pk 'meeting' %}">Schedule meeting</a>{% endif %}
+<div class="list-group">{% for m in meetings %}<a class="list-group-item" href="{% url 'meeting_detail' chama.pk m.pk %}">{{ m.date }} · {{ m.title }} <small class="text-muted">{{ m.venue }}</small></a>{% empty %}<p class="text-muted">No meetings yet.</p>{% endfor %}</div>
+{% endblock %}

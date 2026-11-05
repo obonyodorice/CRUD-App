@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<h4>Expenses</h4>
+{% if me.is_admin %}<a class="btn btn-success mb-3" href="{% url 'add' chama.pk 'expense' %}">Record expense</a>{% endif %}
+<div class="table-responsive"><table class="table table-sm bg-white align-middle">
+  <tr><th>Date</th><th>Category</th><th>Amount</th><th>Details</th><th>Status</th><th></th></tr>
+  {% for e in expenses %}<tr><td>{{ e.date }}</td><td>{{ e.category }}</td><td>{{ e.amount }}</td>
+    <td>{{ e.description }} {% if e.receipt %}<a href="{{ e.receipt.url }}" target="_blank">receipt</a>{% endif %}</td><td>{{ e.get_approval_status_display }}</td>
+    <td>{% if me.is_admin and e.approval_status == 'pending' %}
+      <form method="post" class="d-inline" action="{% url 'expense_action' chama.pk e.pk 'approve' %}">{% csrf_token %}<button class="btn btn-sm btn-success">Approve</button></form>
+      <form method="post" class="d-inline" action="{% url 'expense_action' chama.pk e.pk 'reject' %}">{% csrf_token %}<button class="btn btn-sm btn-outline-danger">Reject</button></form>{% endif %}</td></tr>{% endfor %}
+</table></div>
+{% endblock %}

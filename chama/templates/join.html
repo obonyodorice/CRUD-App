@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<h4>Join a chama</h4>
+{% if target %}
+<div class="card card-body">
+  <p>Join <strong>{{ target.name }}</strong>? Contribution: KES {{ target.contribution_amount }} ({{ target.get_frequency_display }}).</p>
+  <form method="post">{% csrf_token %}<input type="hidden" name="code" value="{{ code }}">
+    <button name="confirm" value="1" class="btn btn-success">Yes, join</button>
+    <a class="btn btn-link" href="/">Cancel</a></form>
+</div>
+{% else %}
+<form method="post" class="card card-body">{% csrf_token %}
+  <input name="code" placeholder="Invite code" required>
+  <button class="btn btn-success">Find chama</button>
+</form>
+{% endif %}
+{% endblock %}

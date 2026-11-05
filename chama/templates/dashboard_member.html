@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<h4>{{ chama.name }}</h4>
+<p class="text-muted">Hello {{ me.name }}. This is your personal view.</p>
+<div class="row g-2 mb-3">
+  <div class="col-6 col-md-3"><div class="card card-body"><small>My savings</small><h5>KES {{ paid|floatformat:2 }}</h5></div></div>
+  <div class="col-6 col-md-3"><div class="card card-body {% if owed > 0 %}border-warning{% endif %}"><small>I owe</small><h5>KES {{ owed|floatformat:2 }}</h5></div></div>
+  <div class="col-6 col-md-3"><div class="card card-body"><small>Fines due</small><h5>KES {{ fines_due|floatformat:2 }}</h5></div></div>
+</div>
+<div class="d-flex gap-2 mb-3">
+  <a class="btn btn-success" href="{% url 'member_detail' chama.pk me.pk %}">My full statement</a>
+  <a class="btn btn-outline-success" href="{% url 'add' chama.pk 'loan' %}">Request a loan</a>
+</div>
+{% for l in loans %}<div class="alert alert-warning">Active loan: balance KES {{ l.balance|floatformat:2 }}, due {{ l.due_date }} · <a href="{% url 'loan_detail' chama.pk l.pk %}">details</a></div>{% endfor %}
+<h6>My recent contributions</h6>
+<table class="table table-sm bg-white">{% for c in recent %}<tr><td>{{ c.date_paid }}</td><td>{{ c.period }}</td><td>{{ c.amount }}</td><td>{{ c.get_method_display }}</td></tr>{% empty %}<tr><td class="text-muted">Nothing yet.</td></tr>{% endfor %}</table>
+{% include "partials_notices.html" %}
+{% endblock %}

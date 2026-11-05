@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<h4>{{ chama.name }} <span class="badge bg-success fs-6">Admin view</span></h4>
+<div class="row g-2 mb-3">
+  <div class="col-6 col-md-3"><div class="card card-body"><small>Group balance</small><h5>KES {{ balance|floatformat:2 }}</h5></div></div>
+  <div class="col-6 col-md-3"><div class="card card-body"><small>Total collected</small><h5>KES {{ collected|floatformat:2 }}</h5></div></div>
+  <div class="col-6 col-md-3"><div class="card card-body"><small>Members behind</small><h5>{{ behind }}</h5></div></div>
+  <div class="col-6 col-md-3"><div class="card card-body"><small>Pending approvals</small>
+    <h5><a href="{% url 'loans' chama.pk %}">{{ pending_loans }} loans</a> · <a href="{% url 'expenses' chama.pk %}">{{ pending_expenses }} expenses</a></h5></div></div>
+</div>
+{% if overdue %}<div class="alert alert-danger">Overdue loans: {% for l in overdue %}<a href="{% url 'loan_detail' chama.pk l.pk %}">{{ l.borrower }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}</div>{% endif %}
+<div class="d-flex gap-2 flex-wrap mb-3">
+  <a class="btn btn-success" href="{% url 'add' chama.pk 'contribution' %}">Record contribution</a>
+  <a class="btn btn-outline-success" href="{% url 'add' chama.pk 'fine' %}">Issue fine</a>
+  <a class="btn btn-outline-success" href="{% url 'add' chama.pk 'expense' %}">Add expense</a>
+  <a class="btn btn-outline-success" href="{% url 'add' chama.pk 'announcement' %}">Announce</a>
+</div>
+<div class="table-responsive"><table class="table table-sm bg-white">
+  <tr><th>Member</th><th>Paid</th><th>Owed</th><th>Fines</th><th>Loan</th><th></th></tr>
+  {% for r in rows %}<tr class="{% if r.owed > 0 %}table-warning{% endif %}">
+    <td><a href="{% url 'member_detail' chama.pk r.m.pk %}">{{ r.m.name }}</a></td>
+    <td>{{ r.paid|floatformat:2 }}</td><td>{{ r.owed|floatformat:2 }}</td><td>{{ r.fines|floatformat:2 }}</td><td>{{ r.loan|floatformat:2 }}</td>
+    <td>{% if r.owed > 0 %}<a class="btn btn-sm btn-outline-success" target="_blank" href="{{ r.m.reminder_link }}">Remind</a>{% endif %}</td></tr>{% endfor %}
+</table></div>
+{% include "partials_notices.html" %}
+{% endblock %}

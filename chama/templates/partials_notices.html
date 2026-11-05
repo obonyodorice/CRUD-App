@@ -1,0 +1,2 @@
+{% if next_meeting %}<div class="alert alert-info">Next meeting: <a href="{% url 'meeting_detail' chama.pk next_meeting.pk %}">{{ next_meeting.title }}</a> on {{ next_meeting.date }}{% if next_meeting.venue %} at {{ next_meeting.venue }}{% endif %}</div>{% endif %}
+{% for a in announcements %}<div class="card card-body mb-2"><strong>{{ a.title }}</strong><span>{{ a.message|linebreaksbr }}</span></div>{% endfor %}

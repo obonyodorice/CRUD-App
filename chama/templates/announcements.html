@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block content %}
+<h4>Notices</h4>
+{% if me.is_admin %}<a class="btn btn-success mb-3" href="{% url 'add' chama.pk 'announcement' %}">New announcement</a>{% endif %}
+{% for a in items %}<div class="card card-body mb-2"><strong>{{ a.title }}</strong>{{ a.message|linebreaksbr }}
+  <small class="text-muted">{{ a.posted_by }} · {{ a.created_at|date:"d M Y" }} · <a target="_blank" href="{{ a.share_link }}">Share on WhatsApp</a></small></div>{% empty %}<p class="text-muted">No notices.</p>{% endfor %}
+{% endblock %}

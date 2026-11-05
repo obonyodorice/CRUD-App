@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<h4>{% if me.is_admin %}Contributions{% else %}My contributions{% endif %}</h4>
+{% if me.is_admin %}<a class="btn btn-success mb-3" href="{% url 'add' chama.pk 'contribution' %}">Record contribution</a>{% endif %}
+<div class="table-responsive"><table class="table table-sm bg-white align-middle">
+  <tr><th>Date</th>{% if me.is_admin %}<th>Member</th>{% endif %}<th>Period</th><th>Amount</th><th>Method</th>{% if me.is_admin %}<th>By</th><th></th>{% endif %}</tr>
+  {% for c in items %}<tr class="{% if c.is_reversed or c.amount < 0 %}text-muted{% endif %}">
+    <td>{{ c.date_paid }}</td>{% if me.is_admin %}<td>{{ c.member }}</td>{% endif %}<td>{{ c.period }}</td>
+    <td>{% if c.is_reversed %}<s>{{ c.amount }}</s>{% else %}{{ c.amount }}{% endif %}</td>
+    <td>{{ c.get_method_display }} {{ c.mpesa_code }}</td>
+    {% if me.is_admin %}<td>{{ c.recorded_by }}</td>
+    <td>{% if c.amount < 0 %}<small>Reversal: {{ c.note }}</small>
+      {% elif not c.is_reversed %}
+      <form method="post" action="{% url 'contribution_reverse' chama.pk c.pk %}" class="d-flex gap-1" onsubmit="return confirm('Reverse this entry?')">{% csrf_token %}
+        <input name="reason" placeholder="Reason" required style="margin:0;width:110px"><button class="btn btn-sm btn-outline-danger">Reverse</button></form>
+      {% endif %}</td>{% endif %}</tr>{% endfor %}
+</table></div>
+{% endblock %}

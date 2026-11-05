@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<h4>{{ meeting.title }}</h4><p class="text-muted">{{ meeting.date }} {{ meeting.venue }}</p>
+{% if me.is_admin %}
+<form method="post">{% csrf_token %}
+  <label>Minutes</label><textarea name="minutes" rows="6">{{ meeting.minutes }}</textarea>
+  <h6>Attendance</h6>
+  {% for m, s in rows %}<div class="d-flex justify-content-between align-items-center"><span>{{ m }}</span>
+    <select name="att_{{ m.pk }}" style="width:auto"><option value="">-</option>{% for v, l in statuses %}<option value="{{ v }}" {% if s == v %}selected{% endif %}>{{ l }}</option>{% endfor %}</select></div>{% endfor %}
+  <button class="btn btn-success">Save</button>
+</form>
+{% else %}
+<div class="card card-body mb-3">{{ meeting.minutes|linebreaks|default:"No minutes yet." }}</div>
+<h6>Attendance</h6>{% for m, s in rows %}{% if m == me %}<p>Your status: {{ s|default:"not recorded" }}</p>{% endif %}{% endfor %}
+{% endif %}
+{% endblock %}

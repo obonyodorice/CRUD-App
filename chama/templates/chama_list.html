@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+<h4>My chamas</h4>
+<div class="d-flex gap-2 mb-3">
+  <a class="btn btn-success" href="{% url 'chama_create' %}">Create a chama</a>
+  <a class="btn btn-outline-success" href="{% url 'join_form' %}">Join with invite code</a>
+</div>
+<div class="list-group">
+{% for m in memberships %}
+  <a class="list-group-item list-group-item-action d-flex justify-content-between" href="{% url 'dashboard' m.chama.pk %}">
+    {{ m.chama.name }}<span class="badge bg-secondary">{{ m.get_role_display }}{% if m.is_admin %} · Admin{% endif %}</span>
+  </a>
+{% empty %}<p class="text-muted">You are not in any chama yet.</p>{% endfor %}
+</div>
+{% endblock %}

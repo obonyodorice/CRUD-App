@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<h4>Loans</h4>
+<p class="small text-muted">Interest: {{ chama.loan_interest_rate }}% per month ({{ chama.get_loan_interest_type_display }}). Limit: {{ chama.loan_limit_multiple }}x your savings.</p>
+<a class="btn btn-success mb-3" href="{% url 'add' chama.pk 'loan' %}">Request a loan</a>
+<div class="table-responsive"><table class="table table-sm bg-white">
+  <tr><th>Borrower</th><th>Amount</th><th>Months</th><th>Status</th><th>Balance</th><th>Due</th></tr>
+  {% for l in loans %}<tr class="{% if l.is_overdue %}table-danger{% endif %}"><td><a href="{% url 'loan_detail' chama.pk l.pk %}">{{ l.borrower }}</a></td>
+    <td>{{ l.amount }}</td><td>{{ l.repayment_months }}</td><td>{{ l.get_status_display }}</td>
+    <td>{% if l.status == 'active' %}{{ l.balance|floatformat:2 }}{% endif %}</td><td>{{ l.due_date|default:"" }}</td></tr>{% endfor %}
+</table></div>
+{% endblock %}

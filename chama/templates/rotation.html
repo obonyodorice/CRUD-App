@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<h4>Merry-go-round</h4>
+{% if cycle %}
+<table class="table table-sm bg-white align-middle"><tr><th>#</th><th>Member</th><th>Payout date</th><th>Amount</th><th></th></tr>
+  {% for s in slots %}<tr class="{% if s.is_paid_out %}table-success{% endif %}"><td>{{ s.position }}</td><td>{{ s.membership }}</td><td>{{ s.payout_date }}</td><td>{{ s.payout_amount }}</td>
+    <td>{% if s.is_paid_out %}Paid{% elif me.is_admin %}<form method="post" action="{% url 'rotation_paid' chama.pk s.pk %}">{% csrf_token %}<button class="btn btn-sm btn-success">Mark paid out</button></form>{% endif %}</td></tr>{% endfor %}
+</table>
+{% else %}<p class="text-muted">No active rotation.</p>{% endif %}
+{% if me.is_admin %}
+<form method="post" class="card card-body mt-3">{% csrf_token %}
+  <h6>{% if cycle %}Start a new cycle (replaces the current one){% else %}Start a rotation{% endif %}</h6>
+  <input name="start_date" type="date" value="{% now 'Y-m-d' %}" required>
+  <input name="payout_amount" type="number" step="0.01" value="{{ default_amount }}" required>
+  <select name="order"><option value="join">Order of joining</option><option value="random">Random draw</option></select>
+  <button class="btn btn-success">Create</button>
+</form>{% endif %}
+{% endblock %}

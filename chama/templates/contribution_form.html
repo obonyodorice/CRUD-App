@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<h4>Record contribution</h4>
+<form method="post">{% csrf_token %}
+  <select class="form-select mb-2" name="member" required>
+    {% for m in members %}<option value="{{ m.id }}">{{ m.name }}</option>{% endfor %}
+  </select>
+  <input class="form-control mb-2" name="amount" type="number" step="0.01" placeholder="Amount" required>
+  <input class="form-control mb-2" name="date_paid" type="date" required>
+  <select class="form-select mb-2" name="method">
+    <option value="cash">Cash</option><option value="mpesa">M-Pesa</option>
+  </select>
+  <input class="form-control mb-2" name="mpesa_code" placeholder="M-Pesa code (if M-Pesa)">
+  <button class="btn btn-success">Save</button>
+  <a href="{% url 'dashboard' chama.pk %}" class="btn btn-link">Cancel</a>
+</form>
+{% endblock %}

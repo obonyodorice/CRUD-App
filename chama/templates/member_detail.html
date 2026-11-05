@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<h4>{{ m.name }} <small class="text-muted">{{ m.get_role_display }}</small></h4>
+<div class="row g-2 mb-3">
+  <div class="col-6 col-md-3"><div class="card card-body"><small>Saved</small><h6>KES {{ m.paid|floatformat:2 }}</h6></div></div>
+  <div class="col-6 col-md-3"><div class="card card-body"><small>Owed</small><h6>KES {{ m.owed|floatformat:2 }}</h6></div></div>
+  <div class="col-6 col-md-3"><div class="card card-body"><small>Fines due</small><h6>KES {{ m.fines_due|floatformat:2 }}</h6></div></div>
+  <div class="col-6 col-md-3"><div class="card card-body"><small>Loan balance</small><h6>KES {{ m.loan_balance|floatformat:2 }}</h6></div></div>
+</div>
+<div class="mb-3 no-print"><button class="btn btn-outline-secondary btn-sm" onclick="window.print()">Print statement</button>
+  <a class="btn btn-outline-success btn-sm" target="_blank" href="{{ m.statement_link }}">Share on WhatsApp</a></div>
+<h6>Contributions</h6>
+<table class="table table-sm bg-white">{% for c in contributions %}<tr class="{% if c.amount < 0 or c.is_reversed %}text-muted{% endif %}"><td>{{ c.date_paid }}</td><td>{{ c.period }}</td><td>{{ c.amount }}</td><td>{{ c.get_method_display }} {{ c.mpesa_code }}</td><td>{{ c.note }}{% if c.is_reversed %}reversed{% endif %}</td></tr>{% empty %}<tr><td class="text-muted">None yet.</td></tr>{% endfor %}</table>
+<h6>Fines</h6>
+<td>{% if f.reason %}{{ f.reason }}{% elif f.fine_type %}{{ f.fine_type.name }}{% else %}-{% endif %}</td>
+<h6>Loans</h6>
+<table class="table table-sm bg-white">{% for l in loans %}<tr><td><a href="{% url 'loan_detail' chama.pk l.pk %}">{{ l.requested_at|date:"d M Y" }}</a></td><td>{{ l.amount }}</td><td>{{ l.get_status_display }}</td><td>Bal {{ l.balance|floatformat:2 }}</td></tr>{% empty %}<tr><td class="text-muted">None.</td></tr>{% endfor %}</table>
+{% endblock %}

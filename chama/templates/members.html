@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<h4>Members</h4>
+<div class="card card-body mb-3">
+  <h6>Invite a member</h6>
+  <form method="post" class="d-flex gap-2">{% csrf_token %}
+    <input name="phone" placeholder="Phone e.g. 0712345678" required style="margin:0">
+    <button class="btn btn-success">Create invite</button>
+  </form>
+  {% if invite_wa %}<a class="btn btn-outline-success mt-2" target="_blank" href="{{ invite_wa }}">Send on WhatsApp</a>{% endif %}
+  <small class="text-muted mt-2">Or share this link: <code>{{ invite }}</code> · code <strong>{{ chama.invite_code }}</strong></small>
+</div>
+<div class="table-responsive"><table class="table table-sm bg-white align-middle">
+  <tr><th>Name</th><th>Phone</th><th>Role / status</th></tr>
+  {% for m in members %}<tr>
+    <td><a href="{% url 'member_detail' chama.pk m.pk %}">{{ m.name }}</a>{% if m.is_admin %} <span class="badge bg-success">Admin</span>{% endif %}</td>
+    <td>{{ m.user.phone_number }}</td>
+    <td>{% if me.role == 'treasurer' and m != me %}
+      <form method="post" action="{% url 'member_update' chama.pk m.pk %}" class="d-flex gap-1 align-items-center flex-wrap">{% csrf_token %}
+        <select name="role" style="width:auto;margin:0">{% for v, l in roles %}<option value="{{ v }}" {% if m.role == v %}selected{% endif %}>{{ l }}</option>{% endfor %}</select>
+        <select name="status" style="width:auto;margin:0">{% for v, l in statuses %}<option value="{{ v }}" {% if m.status == v %}selected{% endif %}>{{ l }}</option>{% endfor %}</select>
+        <label class="small"><input type="checkbox" name="is_admin" {% if m.is_admin %}checked{% endif %}> Admin</label>
+        <button class="btn btn-sm btn-outline-success">Save</button></form>
+      {% else %}{{ m.get_role_display }} · {{ m.get_status_display }}{% endif %}</td></tr>{% endfor %}
+</table></div>
+{% if me.role == 'treasurer' %}<p class="small text-muted">As treasurer you can appoint other admins by ticking "Admin".</p>{% endif %}
+{% endblock %}

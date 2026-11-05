@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<h4>Loan: {{ loan.borrower }} <span class="badge bg-secondary">{{ loan.get_status_display }}</span></h4>
+<table class="table table-sm bg-white w-auto">
+  <tr><td>Principal</td><td>KES {{ loan.amount }}</td></tr>
+  <tr><td>Interest ({{ loan.interest_rate }}% / month, {{ loan.get_interest_type_display }})</td><td>KES {{ loan.total_interest }}</td></tr>
+  <tr><td>Total payable</td><td>KES {{ loan.total_payable }}</td></tr>
+  <tr><td>Monthly installment</td><td>KES {{ loan.installment }} × {{ loan.repayment_months }}</td></tr>
+  <tr><td>Paid so far</td><td>KES {{ loan.amount_paid }}</td></tr>
+  <tr><td>Balance</td><td><strong>KES {{ loan.balance|floatformat:2 }}</strong></td></tr>
+  <tr><td>Purpose</td><td>{{ loan.purpose }}</td></tr>
+  <tr><td>Due</td><td>{{ loan.due_date|default:"-" }}{% if loan.is_overdue %} <span class="badge bg-danger">Overdue</span>{% endif %}</td></tr>
+</table>
+{% if me.is_admin %}
+<div class="d-flex gap-2 flex-wrap mb-3">
+  {% if loan.status == 'requested' %}
+  <form method="post">{% csrf_token %}<button name="action" value="approve" class="btn btn-success">Approve & disburse</button>
+    <button name="action" value="reject" class="btn btn-outline-danger">Reject</button></form>
+  {% elif loan.status == 'active' %}
+  <form method="post" class="d-flex gap-2">{% csrf_token %}<input type="hidden" name="action" value="repay">
+    <input name="amount" type="number" step="0.01" placeholder="Repayment amount" style="margin:0" required><button class="btn btn-success">Record repayment</button></form>
+  <form method="post" onsubmit="return confirm('Mark as defaulted?')">{% csrf_token %}<button name="action" value="default" class="btn btn-outline-danger">Mark defaulted</button></form>
+  {% endif %}
+</div>{% endif %}
+<h6>Repayments</h6>
+<table class="table table-sm bg-white">{% for r in repayments %}<tr><td>{{ r.date_paid }}</td><td>{{ r.amount }}</td><td>{{ r.recorded_by }}</td></tr>{% empty %}<tr><td class="text-muted">None yet.</td></tr>{% endfor %}</table>
+{% endblock %}

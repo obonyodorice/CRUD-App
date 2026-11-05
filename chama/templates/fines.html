@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+<h4>Fines</h4>
+{% if me.is_admin %}
+<div class="d-flex gap-2 mb-2"><a class="btn btn-success" href="{% url 'add' chama.pk 'fine' %}">Issue fine</a>
+  <a class="btn btn-outline-success" href="{% url 'add' chama.pk 'fine_type' %}">New fine type</a></div>
+<p class="small text-muted">Fine types: {% for t in types %}{{ t }}{% if not forloop.last %}; {% endif %}{% empty %}none yet{% endfor %}</p>{% endif %}
+<div class="table-responsive"><table class="table table-sm bg-white align-middle">
+  <tr><th>Date</th><th>Member</th><th>Reason</th><th>Amount</th><th>Status</th><th></th></tr>
+  <td>{% if f.reason %}{{ f.reason }}{% elif f.fine_type %}{{ f.fine_type.name }}{% else %}-{% endif %}</td>
+    <td>{% if me.is_admin and f.status == 'unpaid' %}
+      <form method="post" class="d-inline" action="{% url 'fine_action' chama.pk f.pk 'paid' %}">{% csrf_token %}<button class="btn btn-sm btn-success">Paid</button></form>
+      <form method="post" class="d-inline" action="{% url 'fine_action' chama.pk f.pk 'waived' %}">{% csrf_token %}<button class="btn btn-sm btn-outline-secondary">Waive</button></form>{% endif %}</td></tr>
+</table></div>
+{% endblock %}
